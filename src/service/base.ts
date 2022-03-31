@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { AxiosResponse } from 'axios'
 import type { IResponseResults } from '@/service/type'
 
 const ERR_OK = 0
