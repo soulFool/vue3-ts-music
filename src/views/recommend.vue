@@ -5,9 +5,14 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 
+import { getRecommend } from '@/service/recommend'
+
 export default defineComponent({
   name: 'recommend',
-  setup() {
+  async setup() {
+    const result = await getRecommend()
+    console.log(result)
+
     return {}
   }
 })
