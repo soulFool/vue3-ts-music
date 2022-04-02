@@ -35,12 +35,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   name: 'loading',
   setup() {
-    return {}
+    const title = ref('')
+
+    const setTitle = (val: string) => {
+      title.value = val
+    }
+
+    return {
+      title,
+      setTitle
+    }
   }
 })
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="recommend" v-loading="loading">
+  <div class="recommend" v-loading:[loadingText]="loading">
     <scroll class="recommend-content">
       <!-- better-scroll 只对第一个元素生效，所以使用一个容器包裹这两部分 -->
       <div>
@@ -47,6 +47,7 @@ export default defineComponent({
     // 而且好像在哪里听说过，全部使用 composition API，打包的时候就不会打包 options API 的部分，代码体积会减小，故这个项目将全部使用 composition API
     const sliders = ref([])
     const albums = ref([])
+    const loadingText = ref('正在载入...')
 
     const loading = computed(() => !sliders.value.length && !albums.value.length)
 
@@ -61,7 +62,8 @@ export default defineComponent({
     return {
       sliders,
       albums,
-      loading
+      loading,
+      loadingText
     }
   }
 })
