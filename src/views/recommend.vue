@@ -1,5 +1,5 @@
 <template>
-  <div class="recommend">
+  <div class="recommend" v-loading="loading">
     <scroll class="recommend-content">
       <!-- better-scroll 只对第一个元素生效，所以使用一个容器包裹这两部分 -->
       <div>
@@ -10,7 +10,7 @@
           </div>
         </div>
         <div class="recommend-list">
-          <h1 class="list-title">热门歌单推荐</h1>
+          <h1 class="list-title" v-show="!loading">热门歌单推荐</h1>
           <ul>
             <li class="item" v-for="item in albums" :key="item.id">
               <div class="icon">
@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue'
+import { defineComponent, onMounted, ref, computed } from 'vue'
 
 import { getRecommend } from '@/service/recommend'
 
@@ -48,6 +48,8 @@ export default defineComponent({
     const sliders = ref([])
     const albums = ref([])
 
+    const loading = computed(() => !sliders.value.length && !albums.value.length)
+
     onMounted(async () => {
       // 这个赋值必须写在 onMounted 里面，如果写在 setup 里面，会报 parentNode 为 null 的错，parentNode 都是 dom 元素
       // debugger 之后发现 slider 的 dom 没有被渲染，所以报错
@@ -58,7 +60,8 @@ export default defineComponent({
 
     return {
       sliders,
-      albums
+      albums,
+      loading
     }
   }
 })
