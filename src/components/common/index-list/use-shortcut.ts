@@ -32,17 +32,14 @@ export default function useShortcut(props: IIndexListProps, groupRef: Ref<HTMLUL
 
   function onShortcutTouchMove(e: TouchEvent) {
     touch.y2 = e.touches[0].pageY
-    const delta = (touch.y2 - touch.y1 / ANCHOR_HEIGHT) | 0
+    const delta = ((touch.y2 - touch.y1) / ANCHOR_HEIGHT) | 0
     const anchorIndex = touch.anchorIndex + delta
 
     scrollTo(anchorIndex)
   }
 
-  function onShortcutTouchEnd(e: TouchEvent) {
-    const anchorIndex = (e.target as HTMLElement).dataset.index
-  }
-
   function scrollTo(index: number) {
+    if (isNaN(index)) return
     index = Math.max(0, Math.min(shortcutList.value.length - 1, index))
     const targetEl = groupRef.value.children[index]
     const scroll = scrollRef.value!.scroll as BScrollType
@@ -53,7 +50,6 @@ export default function useShortcut(props: IIndexListProps, groupRef: Ref<HTMLUL
     scrollRef,
     shortcutList,
     onShortcutTouchStart,
-    onShortcutTouchMove,
-    onShortcutTouchEnd
+    onShortcutTouchMove
   }
 }

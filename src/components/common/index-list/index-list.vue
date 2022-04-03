@@ -14,12 +14,7 @@
     <div class="fixed" v-show="fixedTitle" :style="fixedStyle">
       <div class="fixed-title">{{ fixedTitle }}</div>
     </div>
-    <div
-      class="shortcut"
-      @touchstart.stop.prevent="onShortcutTouchStart"
-      @touchmove.stop.prevent="onShortcutTouchMove"
-      @touchend.stop.prevent="onShortcutTouchEnd"
-    >
+    <div class="shortcut" @touchstart.stop.prevent="onShortcutTouchStart" @touchmove.stop.prevent="onShortcutTouchMove">
       <ul>
         <li class="item" v-for="(item, index) in shortcutList" :key="item" :data-index="index" :class="{ current: currentIndex === index }">
           {{ item }}
@@ -53,23 +48,20 @@ export default defineComponent({
   },
   setup(props) {
     const { groupRef, currentIndex, fixedTitle, fixedStyle, onScroll } = useFixed(props)
-    const { scrollRef, shortcutList, onShortcutTouchStart, onShortcutTouchMove, onShortcutTouchEnd } = useShortcut(
-      props,
-      groupRef as Ref<HTMLUListElement>
-    )
+    const { scrollRef, shortcutList, onShortcutTouchStart, onShortcutTouchMove } = useShortcut(props, groupRef as Ref<HTMLUListElement>)
 
     return {
+      // fixed
       groupRef,
       currentIndex,
       fixedTitle,
       fixedStyle,
       onScroll,
-
+      // shortcut
       scrollRef,
       shortcutList,
       onShortcutTouchStart,
-      onShortcutTouchMove,
-      onShortcutTouchEnd
+      onShortcutTouchMove
     }
   }
 })
