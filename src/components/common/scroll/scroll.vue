@@ -33,10 +33,11 @@ export default defineComponent({
   },
   setup(props, context) {
     const rootRef = ref<HTMLElement>()
-    useScroll(rootRef as Ref<HTMLElement>, props, context)
+    const scroll = useScroll(rootRef as Ref<HTMLElement>, props, context)
 
     return {
-      rootRef
+      rootRef,
+      scroll
     }
   }
 })

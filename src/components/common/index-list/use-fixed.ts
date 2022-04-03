@@ -11,7 +11,6 @@ export default function useFixed(props: IIndexListProps) {
   const distance = ref(0)
 
   const fixedTitle = computed(() => {
-    console.log(scrollY.value)
     if (scrollY.value < 0) {
       return ''
     }
@@ -70,6 +69,7 @@ export default function useFixed(props: IIndexListProps) {
 
   return {
     groupRef,
+    currentIndex,
     fixedTitle,
     fixedStyle,
     onScroll

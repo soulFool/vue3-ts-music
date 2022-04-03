@@ -1,5 +1,5 @@
 <template>
-  <scroll class="index-list" :probe-type="3" @scroll="onScroll">
+  <scroll class="index-list" :probe-type="3" @scroll="onScroll" ref="scrollRef">
     <ul ref="groupRef">
       <li class="group" v-for="group in data" :key="group.title">
         <h2 class="title">{{ group.title }}</h2>
@@ -14,6 +14,18 @@
     <div class="fixed" v-show="fixedTitle" :style="fixedStyle">
       <div class="fixed-title">{{ fixedTitle }}</div>
     </div>
+    <div
+      class="shortcut"
+      @touchstart.stop.prevent="onShortcutTouchStart"
+      @touchmove.stop.prevent="onShortcutTouchMove"
+      @touchend.stop.prevent="onShortcutTouchEnd"
+    >
+      <ul>
+        <li class="item" v-for="(item, index) in shortcutList" :key="item" :data-index="index" :class="{ current: currentIndex === index }">
+          {{ item }}
+        </li>
+      </ul>
+    </div>
   </scroll>
 </template>
 
@@ -21,9 +33,11 @@
 import { defineComponent, PropType } from 'vue'
 
 import useFixed from './use-fixed'
+import useShortcut from './use-shortcut'
 
 import Scroll from '@/components/common/scroll/scroll.vue'
 
+import type { Ref } from 'vue'
 import type { ISingerGroup } from '@/views/type'
 
 export default defineComponent({
@@ -38,13 +52,24 @@ export default defineComponent({
     }
   },
   setup(props) {
-    const { groupRef, fixedTitle, fixedStyle, onScroll } = useFixed(props)
+    const { groupRef, currentIndex, fixedTitle, fixedStyle, onScroll } = useFixed(props)
+    const { scrollRef, shortcutList, onShortcutTouchStart, onShortcutTouchMove, onShortcutTouchEnd } = useShortcut(
+      props,
+      groupRef as Ref<HTMLUListElement>
+    )
 
     return {
       groupRef,
+      currentIndex,
       fixedTitle,
       fixedStyle,
-      onScroll
+      onScroll,
+
+      scrollRef,
+      shortcutList,
+      onShortcutTouchStart,
+      onShortcutTouchMove,
+      onShortcutTouchEnd
     }
   }
 })
@@ -95,6 +120,27 @@ export default defineComponent({
       font-size: $font-size-small;
       color: $color-text-l;
       background: $color-highlight-background;
+    }
+  }
+  .shortcut {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    padding: 20px 0;
+    border-radius: 10px;
+    text-align: center;
+    background: $color-background-d;
+    font-family: Helvetiva;
+    .item {
+      padding: 3px;
+      line-height: 1;
+      color: $color-text-l;
+      font-size: $font-size-small;
+      &.current {
+        color: $color-theme;
+      }
     }
   }
 }

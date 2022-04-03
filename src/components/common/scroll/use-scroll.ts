@@ -30,4 +30,6 @@ export default function useScroll(wrapperRef: Ref<HTMLElement>, options: IScroll
   onUnmounted(() => {
     scroll.value?.destroy()
   })
+
+  return scroll
 }
