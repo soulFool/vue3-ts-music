@@ -3,10 +3,12 @@ import { ref, watch, computed, nextTick } from 'vue'
 import { IIndexListProps } from './type'
 
 export default function useFixed(props: IIndexListProps) {
+  const TITLE_HEIGHT = 30
   const groupRef = ref<HTMLUListElement>()
   const listHeights = ref<number[]>([])
   const scrollY = ref(0)
   const currentIndex = ref(0)
+  const distance = ref(0)
 
   const fixedTitle = computed(() => {
     console.log(scrollY.value)
@@ -15,6 +17,14 @@ export default function useFixed(props: IIndexListProps) {
     }
     const currentGroup = props.data[currentIndex.value]
     return currentGroup ? currentGroup.title : ''
+  })
+
+  const fixedStyle = computed(() => {
+    const distanceVal = distance.value
+    const diff = distanceVal > 0 && distanceVal < TITLE_HEIGHT ? distanceVal - TITLE_HEIGHT : 0
+    return {
+      transform: `translate3d(0, ${diff}px, 0)`
+    }
   })
 
   watch(
@@ -33,6 +43,7 @@ export default function useFixed(props: IIndexListProps) {
       const heightBottom = listHeightsVal[i + 1]
       if (newY >= heightTop && newY <= heightBottom) {
         currentIndex.value = i
+        distance.value = heightBottom - newY
       }
     }
   })
@@ -60,6 +71,7 @@ export default function useFixed(props: IIndexListProps) {
   return {
     groupRef,
     fixedTitle,
+    fixedStyle,
     onScroll
   }
 }
