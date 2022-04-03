@@ -20,11 +20,20 @@ export default defineComponent({
     click: {
       type: Boolean,
       default: true
+    },
+    probeType: {
+      type: Number,
+      default: 0
     }
   },
-  setup(props) {
+  emits: {
+    scroll(pos: { x: number; y: number }) {
+      return Math.abs(pos.x) * Math.abs(pos.y) >= 0
+    }
+  },
+  setup(props, context) {
     const rootRef = ref<HTMLElement>()
-    useScroll(rootRef as Ref<HTMLElement>, props)
+    useScroll(rootRef as Ref<HTMLElement>, props, context)
 
     return {
       rootRef

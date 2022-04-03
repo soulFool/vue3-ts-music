@@ -1,6 +1,6 @@
 <template>
-  <scroll class="index-list">
-    <ul>
+  <scroll class="index-list" :probe-type="3" @scroll="onScroll">
+    <ul ref="groupRef">
       <li class="group" v-for="group in data" :key="group.title">
         <h2 class="title">{{ group.title }}</h2>
         <ul>
@@ -11,20 +11,25 @@
         </ul>
       </li>
     </ul>
+    <div class="fixed" v-show="fixedTitle">
+      <div class="fixed-title">{{ fixedTitle }}</div>
+    </div>
   </scroll>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 
-import scroll from '@/components/common/scroll/scroll.vue'
+import useFixed from './use-fixed'
+
+import Scroll from '@/components/common/scroll/scroll.vue'
 
 import type { ISingerGroup } from '@/views/type'
 
 export default defineComponent({
   name: 'index-list',
   components: {
-    scroll
+    Scroll
   },
   props: {
     data: {
@@ -32,8 +37,14 @@ export default defineComponent({
       default: () => []
     }
   },
-  setup() {
-    return {}
+  setup(props) {
+    const { groupRef, fixedTitle, onScroll } = useFixed(props)
+
+    return {
+      groupRef,
+      fixedTitle,
+      onScroll
+    }
   }
 })
 </script>
@@ -69,6 +80,20 @@ export default defineComponent({
         color: $color-text-l;
         font-size: $font-size-medium;
       }
+    }
+  }
+  .fixed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    .fixed-title {
+      height: 30px;
+      line-height: 30px;
+      padding-left: 20px;
+      font-size: $font-size-small;
+      color: $color-text-l;
+      background: $color-highlight-background;
     }
   }
 }
