@@ -40,7 +40,7 @@ import { defineComponent, ref } from 'vue'
 export default defineComponent({
   name: 'loading',
   setup() {
-    const title = ref('')
+    const title = ref('正在载入...')
 
     const setTitle = (val: string) => {
       title.value = val

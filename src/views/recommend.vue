@@ -1,5 +1,5 @@
 <template>
-  <div class="recommend" v-loading:[loadingText]="loading">
+  <div class="recommend" v-loading="loading">
     <scroll class="recommend-content">
       <!-- better-scroll 只对第一个元素生效，所以使用一个容器包裹这两部分 -->
       <div>
@@ -36,6 +36,8 @@ import { getRecommend } from '@/service/recommend'
 import Slider from '@/components/common/slider/slider.vue'
 import Scroll from '@/components/common/scroll/scroll.vue'
 
+import type { IRecommendAlbumsItem } from './type'
+
 export default defineComponent({
   name: 'recommend',
   components: {
@@ -46,8 +48,7 @@ export default defineComponent({
     // 其实这里用 options API 更好，只不过这个项目是为了练习 Vue3
     // 而且好像在哪里听说过，全部使用 composition API，打包的时候就不会打包 options API 的部分，代码体积会减小，故这个项目将全部使用 composition API
     const sliders = ref([])
-    const albums = ref([])
-    const loadingText = ref('正在载入...')
+    const albums = ref<IRecommendAlbumsItem[]>([])
 
     const loading = computed(() => !sliders.value.length && !albums.value.length)
 
@@ -62,8 +63,7 @@ export default defineComponent({
     return {
       sliders,
       albums,
-      loading,
-      loadingText
+      loading
     }
   }
 })
