@@ -4,7 +4,7 @@
       <li class="group" v-for="group in data" :key="group.title">
         <h2 class="title">{{ group.title }}</h2>
         <ul>
-          <li class="item" v-for="item in group.list" :key="item.id">
+          <li class="item" v-for="item in group.list" :key="item.id" @click="onItemClick(item)">
             <img class="avatar" v-lazy="item.pic" alt="图片" />
             <span class="name">{{ item.name }}</span>
           </li>
@@ -33,7 +33,7 @@ import useShortcut from './use-shortcut'
 import Scroll from '@/components/common/scroll/scroll.vue'
 
 import type { Ref } from 'vue'
-import type { ISingerGroup } from '@/views/type'
+import type { ISingerGroup, ISingerGroupItem } from '@/views/type'
 
 export default defineComponent({
   name: 'index-list',
@@ -46,11 +46,17 @@ export default defineComponent({
       default: () => []
     }
   },
-  setup(props) {
+  emits: ['select'],
+  setup(props, { emit }) {
     const { groupRef, currentIndex, fixedTitle, fixedStyle, onScroll } = useFixed(props)
     const { scrollRef, shortcutList, onShortcutTouchStart, onShortcutTouchMove } = useShortcut(props, groupRef as Ref<HTMLUListElement>)
 
+    const onItemClick = (item: ISingerGroupItem) => {
+      emit('select', item)
+    }
+
     return {
+      onItemClick,
       // fixed
       groupRef,
       currentIndex,

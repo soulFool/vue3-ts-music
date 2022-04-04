@@ -16,3 +16,14 @@ export interface ISingerGroupItem {
   name: string
   pic: string
 }
+
+export interface ISingerDetail {
+  album: string
+  duration: number
+  id: number
+  mid: string
+  name: string
+  pic: string
+  singer: string
+  url: string
+}

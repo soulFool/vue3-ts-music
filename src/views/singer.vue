@@ -1,17 +1,19 @@
 <template>
   <div class="singer" v-loading="!singers.length">
-    <index-list :data="singers"></index-list>
+    <index-list :data="singers" @select="selectSinger"></index-list>
+    <router-view :singer="selectedSinger"></router-view>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 import { getSingerList } from '@/service/singer'
 
 import IndexList from '@/components/common/index-list/index-list.vue'
 
-import type { ISingerGroup } from './type'
+import type { ISingerGroup, ISingerGroupItem } from './type'
 
 export default defineComponent({
   name: 'singer',
@@ -19,7 +21,16 @@ export default defineComponent({
     IndexList
   },
   setup() {
+    const router = useRouter()
     const singers = ref<ISingerGroup[]>([])
+    const selectedSinger = ref<ISingerGroupItem>()
+
+    const selectSinger = (singer: ISingerGroupItem) => {
+      selectedSinger.value = singer
+      router.push({
+        path: `/singer/${singer.mid}`
+      })
+    }
 
     onMounted(async () => {
       const result = await getSingerList()
@@ -27,7 +38,9 @@ export default defineComponent({
     })
 
     return {
-      singers
+      singers,
+      selectedSinger,
+      selectSinger
     }
   }
 })
