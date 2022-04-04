@@ -1,5 +1,7 @@
 import { get } from '@/service/base'
 
+import { IRecommendResult } from './type'
+
 export function getRecommend() {
-  return get('/api/getRecommend')
+  return get<IRecommendResult>('/api/getRecommend')
 }

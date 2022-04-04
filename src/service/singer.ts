@@ -1,13 +1,14 @@
 import { get } from './base'
 
+import type { ISingerListResult, ISingerDetailResult } from './type'
 import type { ISingerGroupItem } from '@/views/type'
 
 export function getSingerList() {
-  return get('/api/getSingerList')
+  return get<ISingerListResult>('/api/getSingerList')
 }
 
 export function getSingerDetail(singer: ISingerGroupItem) {
-  return get('/api/getSingerDetail', {
+  return get<ISingerDetailResult>('/api/getSingerDetail', {
     mid: singer.mid
   })
 }

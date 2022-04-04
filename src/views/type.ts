@@ -5,6 +5,12 @@ export interface IRecommendAlbumsItem {
   title: string
 }
 
+export interface IRecommendSlidersItem {
+  id: number
+  link: string
+  pic: string
+}
+
 export interface ISingerGroup {
   title: string
   list: ISingerGroupItem[]

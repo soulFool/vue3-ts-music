@@ -1,14 +1,15 @@
 import axios from 'axios'
-import type { IResponseResults } from '@/service/type'
+
+import type { IResponseResult } from '@/service/type'
 
 const ERR_OK = 0
 const baseURL = '/'
 
 axios.defaults.baseURL = baseURL
 
-export function get(url: string, params?: any) {
+export function get<T = any>(url: string, params?: any) {
   return axios
-    .get<IResponseResults>(url, {
+    .get<IResponseResult<T>>(url, {
       params
     })
     .then((res) => {

@@ -36,7 +36,8 @@ import { getRecommend } from '@/service/recommend'
 import Slider from '@/components/common/slider/slider.vue'
 import Scroll from '@/components/common/scroll/scroll.vue'
 
-import type { IRecommendAlbumsItem } from './type'
+import type { IRecommendAlbumsItem, IRecommendSlidersItem } from './type'
+import type { IRecommendResult } from '@/service/type'
 
 export default defineComponent({
   name: 'recommend',
@@ -47,7 +48,7 @@ export default defineComponent({
   setup() {
     // 其实这里用 options API 更好，只不过这个项目是为了练习 Vue3
     // 而且好像在哪里听说过，全部使用 composition API，打包的时候就不会打包 options API 的部分，代码体积会减小，故这个项目将全部使用 composition API
-    const sliders = ref([])
+    const sliders = ref<IRecommendSlidersItem[]>([])
     const albums = ref<IRecommendAlbumsItem[]>([])
 
     const loading = computed(() => !sliders.value.length && !albums.value.length)
@@ -56,8 +57,8 @@ export default defineComponent({
       // 这个赋值必须写在 onMounted 里面，如果写在 setup 里面，会报 parentNode 为 null 的错，parentNode 都是 dom 元素
       // debugger 之后发现 slider 的 dom 没有被渲染，所以报错
       const result = await getRecommend()
-      sliders.value = result.sliders
-      albums.value = result.albums
+      sliders.value = (result as IRecommendResult).sliders
+      albums.value = (result as IRecommendResult).albums
     })
 
     return {

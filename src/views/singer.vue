@@ -13,6 +13,7 @@ import { getSingerList } from '@/service/singer'
 
 import IndexList from '@/components/common/index-list/index-list.vue'
 
+import type { ISingerListResult } from '@/service/type'
 import type { ISingerGroup, ISingerGroupItem } from './type'
 
 export default defineComponent({
@@ -34,7 +35,7 @@ export default defineComponent({
 
     onMounted(async () => {
       const result = await getSingerList()
-      singers.value = result.singers
+      singers.value = (result as ISingerListResult).singers
     })
 
     return {
