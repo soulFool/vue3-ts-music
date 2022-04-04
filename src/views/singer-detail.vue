@@ -6,6 +6,7 @@
 import { defineComponent, onMounted, PropType } from 'vue'
 
 import { getSingerDetail } from '@/service/singer'
+import { processSongs } from '@/service/song'
 
 import type { ISingerGroupItem } from '@/views/type'
 
@@ -20,7 +21,8 @@ export default defineComponent({
   setup(props) {
     onMounted(async () => {
       const result = await getSingerDetail(props.singer)
-      console.log(result)
+      const songs = await processSongs(result.songs)
+      console.log(songs)
     })
 
     return {}
@@ -28,4 +30,14 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.singer-detail {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: $color-background;
+}
+</style>
