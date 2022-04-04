@@ -1,17 +1,25 @@
 <template>
-  <div class="singer-detail"></div>
+  <div class="singer-detail">
+    <music-list :songs="songs" :title="title" :pic="pic"></music-list>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, PropType } from 'vue'
+import { defineComponent, onMounted, PropType, ref, computed } from 'vue'
 
 import { getSingerDetail } from '@/service/singer'
 import { processSongs } from '@/service/song'
 
-import type { ISingerGroupItem } from '@/views/type'
+import MusicList from '@/components/content/music-list/music-list.vue'
+
+import type { ISingerGroupItem, ISingerDetail } from './type'
+import type { ISingerDetailResult } from '@/service/type'
 
 export default defineComponent({
   name: 'singer-detail',
+  components: {
+    MusicList
+  },
   props: {
     singer: {
       type: Object as PropType<ISingerGroupItem>,
@@ -19,13 +27,25 @@ export default defineComponent({
     }
   },
   setup(props) {
-    onMounted(async () => {
-      const result = await getSingerDetail(props.singer)
-      const songs = await processSongs(result.songs)
-      console.log(songs)
+    const songs = ref<ISingerDetail[]>([])
+
+    const pic = computed(() => {
+      return props.singer && props.singer.pic
+    })
+    const title = computed(() => {
+      return props.singer && props.singer.name
     })
 
-    return {}
+    onMounted(async () => {
+      const result = await getSingerDetail(props.singer)
+      songs.value = await processSongs((result as ISingerDetailResult).songs)
+    })
+
+    return {
+      songs,
+      pic,
+      title
+    }
   }
 })
 </script>
