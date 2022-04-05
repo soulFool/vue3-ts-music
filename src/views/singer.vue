@@ -8,6 +8,9 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import storage from 'good-storage'
+
+import { SINGER_KEY } from '@/assets/ts/constant'
 
 import { getSingerList } from '@/service/singer'
 
@@ -28,9 +31,14 @@ export default defineComponent({
 
     const selectSinger = (singer: ISingerGroupItem) => {
       selectedSinger.value = singer
+      cacheSinger(singer)
       router.push({
         path: `/singer/${singer.mid}`
       })
+    }
+
+    const cacheSinger = (singer: ISingerGroupItem) => {
+      storage.session.set(SINGER_KEY, singer)
     }
 
     onMounted(async () => {

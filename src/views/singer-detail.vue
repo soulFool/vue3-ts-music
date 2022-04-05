@@ -6,6 +6,10 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, PropType, ref, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import storage from 'good-storage'
+
+import { SINGER_KEY } from '@/assets/ts/constant'
 
 import { getSingerDetail } from '@/service/singer'
 import { processSongs } from '@/service/song'
@@ -27,18 +31,42 @@ export default defineComponent({
     }
   },
   setup(props) {
+    const route = useRoute()
+    const router = useRouter()
     const songs = ref<ISingerDetail[]>([])
     const loading = ref(true)
 
+    const computedSinger = computed(() => {
+      let ret = null
+      const singer = props.singer
+      if (singer) {
+        ret = singer
+      } else {
+        const cachedSinger = storage.session.get(SINGER_KEY)
+        if (cachedSinger && cachedSinger.mid === route.params.id) {
+          ret = cachedSinger
+        }
+      }
+      return ret
+    })
     const pic = computed(() => {
-      return props.singer && props.singer.pic
+      const computedSingerVal = computedSinger.value
+      return computedSingerVal && computedSingerVal.pic
     })
     const title = computed(() => {
-      return props.singer && props.singer.name
+      const computedSingerVal = computedSinger.value
+      return computedSingerVal && computedSingerVal.name
     })
 
     onMounted(async () => {
-      const result = await getSingerDetail(props.singer)
+      if (!computedSinger.value) {
+        const path = route.matched[0].path
+        await router.push({
+          path
+        })
+        return
+      }
+      const result = await getSingerDetail(computedSinger.value)
       songs.value = await processSongs((result as ISingerDetailResult).songs)
       loading.value = false
     })
