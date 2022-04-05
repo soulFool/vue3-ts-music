@@ -5,6 +5,12 @@
     </div>
     <h1 class="title">{{ title }}</h1>
     <div class="bg-image" ref="bgImageRef">
+      <div class="play-btn-wrapper">
+        <div v-show="songs.length > 0" class="play-btn" @click="random">
+          <i class="icon-play"></i>
+          <span class="text">随机播放全部</span>
+        </div>
+      </div>
       <div class="filter"></div>
     </div>
     <scroll class="list" v-loading="loading" v-no-result:[noResultText]="noResult" :probe-type="3" @scroll="onScroll">
@@ -66,7 +72,6 @@ export default defineComponent({
     const maxTranslateY = ref(0)
 
     const noResult = computed(() => !props.loading && !props.songs.length)
-
     const bgImageStyle = computed(() => {
       const scrollYVal = scrollY.value
       let zIndex = 0
@@ -94,7 +99,6 @@ export default defineComponent({
         transform: `scale(${scale}) translateZ(${translateZ}px)`
       }
     })
-
     const filterStyle = computed(() => {
       let blur = 0
       const scrollYVal = scrollY.value
@@ -110,13 +114,14 @@ export default defineComponent({
     const goBack = () => {
       router.back()
     }
-
     const onScroll = (pos: { x: number; y: number }) => {
       scrollY.value = -pos.y
     }
-
     const selectItem = (value: { song: ISingerDetail; index: number }) => {
       store.selectPlay(props.songs, value.index)
+    }
+    const random = () => {
+      store.randomPlay(props.songs)
     }
 
     onMounted(() => {
@@ -127,12 +132,15 @@ export default defineComponent({
     return {
       bgImageRef,
       imageHeight,
+      scrollY,
+      maxTranslateY,
       noResult,
       bgImageStyle,
       filterStyle,
       goBack,
       onScroll,
-      selectItem
+      selectItem,
+      random
     }
   }
 })
@@ -178,6 +186,35 @@ export default defineComponent({
     height: v-bind('bgImageStyle.height');
     background-image: v-bind('bgImageStyle.bgUrl');
     transform: v-bind('bgImageStyle.transform');
+    .play-btn-wrapper {
+      position: absolute;
+      bottom: 20px;
+      z-index: 10;
+      width: 100%;
+      display: v-bind("scrollY >= maxTranslateY ? 'none' : ''");
+      .play-btn {
+        box-sizing: border-box;
+        width: 135px;
+        padding: 7px 0;
+        margin: 0 auto;
+        text-align: center;
+        border: 1px solid $color-theme;
+        color: $color-theme;
+        border-radius: 100px;
+        font-size: 0;
+      }
+      .icon-play {
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 6px;
+        font-size: $font-size-medium-x;
+      }
+      .text {
+        display: inline-block;
+        vertical-align: middle;
+        font-size: $font-size-small;
+      }
+    }
     .filter {
       position: absolute;
       top: 0;

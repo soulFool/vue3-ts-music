@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 
 import { PLAY_MODE } from '@/assets/ts/constant'
+import { shuffle } from '@/assets/ts/util'
 
 export const useStore = defineStore('main', {
   state: () => ({
@@ -33,6 +34,14 @@ export const useStore = defineStore('main', {
        * */
       this.playlist = list
       this.currentIndex = index
+    },
+    randomPlay(list: any) {
+      this.playMode = PLAY_MODE.RANDOM
+      this.sequenceList = list
+      this.playing = true
+      this.fullScreen = true
+      this.playlist = shuffle(list)
+      this.currentIndex = 0
     }
   }
 })
