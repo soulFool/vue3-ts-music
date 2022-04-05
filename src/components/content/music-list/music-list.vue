@@ -7,7 +7,7 @@
     <div class="bg-image" ref="bgImageRef">
       <div class="filter"></div>
     </div>
-    <scroll class="list" v-loading="loading" :probe-type="3" @scroll="onScroll">
+    <scroll class="list" v-loading="loading" v-no-result:[noResultText]="noResult" :probe-type="3" @scroll="onScroll">
       <div class="song-list-wrapper">
         <song-list :songs="songs"></song-list>
       </div>
@@ -47,6 +47,10 @@ export default defineComponent({
       type: Boolean,
       require: true,
       default: true
+    },
+    noResultText: {
+      type: String,
+      default: '抱歉，没有找到可播放的歌曲'
     }
   },
   setup(props) {
@@ -57,6 +61,8 @@ export default defineComponent({
     const imageHeight = ref(0)
     const scrollY = ref(0)
     const maxTranslateY = ref(0)
+
+    const noResult = computed(() => !props.loading && !props.songs.length)
 
     const bgImageStyle = computed(() => {
       const scrollYVal = scrollY.value
@@ -114,6 +120,7 @@ export default defineComponent({
     return {
       bgImageRef,
       imageHeight,
+      noResult,
       bgImageStyle,
       filterStyle,
       goBack,
