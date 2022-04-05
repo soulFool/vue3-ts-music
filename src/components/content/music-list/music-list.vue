@@ -9,7 +9,7 @@
     </div>
     <scroll class="list" v-loading="loading" v-no-result:[noResultText]="noResult" :probe-type="3" @scroll="onScroll">
       <div class="song-list-wrapper">
-        <song-list :songs="songs"></song-list>
+        <song-list :songs="songs" @select="selectItem"></song-list>
       </div>
     </scroll>
   </div>
@@ -18,6 +18,8 @@
 <script lang="ts">
 import { defineComponent, PropType, onMounted, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+
+import { useStore } from '@/store'
 
 import SongList from '@/components/common/song-list/song-list.vue'
 import Scroll from '@/components/common/scroll/scroll.vue'
@@ -57,6 +59,7 @@ export default defineComponent({
     const RESERVED_HEIGHT = 44
 
     const router = useRouter()
+    const store = useStore()
     const bgImageRef = ref<HTMLDivElement>()
     const imageHeight = ref(0)
     const scrollY = ref(0)
@@ -112,6 +115,10 @@ export default defineComponent({
       scrollY.value = -pos.y
     }
 
+    const selectItem = (value: { song: ISingerDetail; index: number }) => {
+      store.selectPlay(props.songs, value.index)
+    }
+
     onMounted(() => {
       imageHeight.value = bgImageRef.value!.clientHeight
       maxTranslateY.value = imageHeight.value - RESERVED_HEIGHT
@@ -124,7 +131,8 @@ export default defineComponent({
       bgImageStyle,
       filterStyle,
       goBack,
-      onScroll
+      onScroll,
+      selectItem
     }
   }
 })
