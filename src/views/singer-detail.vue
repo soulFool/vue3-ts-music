@@ -1,6 +1,6 @@
 <template>
   <div class="singer-detail">
-    <music-list :songs="songs" :title="title" :pic="pic"></music-list>
+    <music-list :songs="songs" :title="title" :pic="pic" :loading="loading"></music-list>
   </div>
 </template>
 
@@ -28,6 +28,7 @@ export default defineComponent({
   },
   setup(props) {
     const songs = ref<ISingerDetail[]>([])
+    const loading = ref(true)
 
     const pic = computed(() => {
       return props.singer && props.singer.pic
@@ -39,12 +40,14 @@ export default defineComponent({
     onMounted(async () => {
       const result = await getSingerDetail(props.singer)
       songs.value = await processSongs((result as ISingerDetailResult).songs)
+      loading.value = false
     })
 
     return {
       songs,
       pic,
-      title
+      title,
+      loading
     }
   }
 })

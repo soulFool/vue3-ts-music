@@ -1,13 +1,13 @@
 <template>
   <div class="music-list">
-    <div class="back">
+    <div class="back" @click="goBack">
       <i class="icon-back"></i>
     </div>
     <h1 class="title">{{ title }}</h1>
-    <div class="bg-image" :style="bgImageStyle">
+    <div class="bg-image" ref="bgImageRef">
       <div class="filter"></div>
     </div>
-    <scroll class="list">
+    <scroll class="list" v-loading="loading" :probe-type="3" @scroll="onScroll">
       <div class="song-list-wrapper">
         <song-list :songs="songs"></song-list>
       </div>
@@ -16,7 +16,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, computed } from 'vue'
+import { defineComponent, PropType, onMounted, ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
 import SongList from '@/components/common/song-list/song-list.vue'
 import Scroll from '@/components/common/scroll/scroll.vue'
@@ -41,17 +42,82 @@ export default defineComponent({
     pic: {
       type: String,
       required: true
+    },
+    loading: {
+      type: Boolean,
+      require: true,
+      default: true
     }
   },
   setup(props) {
+    const RESERVED_HEIGHT = 44
+
+    const router = useRouter()
+    const bgImageRef = ref<HTMLDivElement>()
+    const imageHeight = ref(0)
+    const scrollY = ref(0)
+    const maxTranslateY = ref(0)
+
     const bgImageStyle = computed(() => {
+      const scrollYVal = scrollY.value
+      let zIndex = 0
+      let paddingTop = '70%'
+      let height = 0
+      let translateZ = 0
+
+      if (scrollYVal > maxTranslateY.value) {
+        zIndex = 10
+        paddingTop = '0'
+        height = RESERVED_HEIGHT
+        translateZ = 1
+      }
+
+      let scale = 1
+      if (scrollY.value < 0) {
+        scale = 1 + Math.abs(scrollY.value / imageHeight.value)
+      }
+
       return {
-        backgroundImage: `url(${props.pic})`
+        zIndex,
+        paddingTop,
+        height: `${height}px`,
+        bgUrl: `url(${props.pic})`,
+        transform: `scale(${scale}) translateZ(${translateZ}px)`
       }
     })
 
+    const filterStyle = computed(() => {
+      let blur = 0
+      const scrollYVal = scrollY.value
+      const imageHeightVal = imageHeight.value
+      if (scrollYVal > 0) {
+        blur = Math.min(maxTranslateY.value / imageHeightVal, scrollYVal / imageHeightVal) * 20
+      }
+      return {
+        blur: `blur(${blur}px)`
+      }
+    })
+
+    const goBack = () => {
+      router.back()
+    }
+
+    const onScroll = (pos: { x: number; y: number }) => {
+      scrollY.value = -pos.y
+    }
+
+    onMounted(() => {
+      imageHeight.value = bgImageRef.value!.clientHeight
+      maxTranslateY.value = imageHeight.value - RESERVED_HEIGHT
+    })
+
     return {
-      bgImageStyle
+      bgImageRef,
+      imageHeight,
+      bgImageStyle,
+      filterStyle,
+      goBack,
+      onScroll
     }
   }
 })
@@ -92,8 +158,11 @@ export default defineComponent({
     width: 100%;
     transform-origin: top;
     background-size: cover;
-    padding-top: 70%;
-    height: 0;
+    z-index: v-bind('bgImageStyle.zIndex');
+    padding-top: v-bind('bgImageStyle.paddingTop');
+    height: v-bind('bgImageStyle.height');
+    background-image: v-bind('bgImageStyle.bgUrl');
+    transform: v-bind('bgImageStyle.transform');
     .filter {
       position: absolute;
       top: 0;
@@ -101,6 +170,7 @@ export default defineComponent({
       width: 100%;
       height: 100%;
       background: rgba(7, 17, 27, 0.4);
+      backdrop-filter: v-bind('filterStyle.blur');
     }
   }
   .list {
@@ -108,6 +178,7 @@ export default defineComponent({
     bottom: 0;
     width: 100%;
     z-index: 0;
+    top: v-bind("imageHeight + 'px'");
     .song-list-wrapper {
       padding: 20px 30px;
       background: $color-background;
