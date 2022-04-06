@@ -16,13 +16,13 @@
           <div class="icon i-left">
             <i class="icon-sequence"></i>
           </div>
-          <div class="icon i-left">
+          <div class="icon i-left" :class="disableCls">
             <i class="icon-prev" @click="prev"></i>
           </div>
-          <div class="icon i-center">
+          <div class="icon i-center" :class="disableCls">
             <i :class="playIcon" @click="togglePlay"></i>
           </div>
-          <div class="icon i-right">
+          <div class="icon i-right" :class="disableCls">
             <i class="icon-next" @click="next"></i>
           </div>
           <div class="icon i-right">
@@ -31,7 +31,7 @@
         </div>
       </div>
     </div>
-    <audio ref="audioRef" @pause="pause"></audio>
+    <audio ref="audioRef" @pause="pause" @canplay="ready" @error="error"></audio>
   </div>
 </template>
 
@@ -47,9 +47,14 @@ export default defineComponent({
   setup() {
     const store = useStore()
     const audioRef = ref<HTMLAudioElement>()
+    const songReady = ref(false)
 
     const playIcon = computed(() => {
       return store.playing ? 'icon-pause' : 'icon-play'
+    })
+
+    const disableCls = computed(() => {
+      return songReady.value ? '' : 'disable'
     })
 
     watch(
@@ -58,6 +63,7 @@ export default defineComponent({
         if (!newSong.id || !newSong.url) {
           return
         }
+        songReady.value = false
         const audioEl = audioRef.value
         audioEl!.src = newSong.url
         audioEl!.play()
@@ -67,6 +73,9 @@ export default defineComponent({
     watch(
       () => store.playing,
       (newPlaying: boolean) => {
+        if (!songReady.value) {
+          return
+        }
         const audioEl = audioRef.value
         newPlaying ? audioEl!.play() : audioEl!.pause()
       }
@@ -77,6 +86,9 @@ export default defineComponent({
     }
 
     const togglePlay = () => {
+      if (!songReady.value) {
+        return
+      }
       store.playing = !store.playing
     }
 
@@ -85,7 +97,9 @@ export default defineComponent({
     }
 
     const prev = () => {
-      if (!store.playlist) return
+      if (!songReady.value || !store.playlist) {
+        return
+      }
       if (store.playlist.length === 1) {
         loop()
       } else {
@@ -101,7 +115,9 @@ export default defineComponent({
     }
 
     const next = () => {
-      if (!store.playlist) return
+      if (!songReady.value || !store.playlist) {
+        return
+      }
       if (store.playlist.length === 1) {
         loop()
       } else {
@@ -122,15 +138,29 @@ export default defineComponent({
       audioEl!.play()
     }
 
+    const ready = () => {
+      if (songReady.value) {
+        return
+      }
+      songReady.value = true
+    }
+
+    const error = () => {
+      songReady.value = true
+    }
+
     return {
       store,
       audioRef,
       playIcon,
+      disableCls,
       goBack,
       togglePlay,
       pause,
       prev,
-      next
+      next,
+      ready,
+      error
     }
   }
 })
