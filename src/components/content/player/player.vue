@@ -17,13 +17,13 @@
             <i class="icon-sequence"></i>
           </div>
           <div class="icon i-left">
-            <i class="icon-prev"></i>
+            <i class="icon-prev" @click="prev"></i>
           </div>
           <div class="icon i-center">
             <i :class="playIcon" @click="togglePlay"></i>
           </div>
           <div class="icon i-right">
-            <i class="icon-next"></i>
+            <i class="icon-next" @click="next"></i>
           </div>
           <div class="icon i-right">
             <i class="icon-not-favorite"></i>
@@ -84,13 +84,53 @@ export default defineComponent({
       store.playing = false
     }
 
+    const prev = () => {
+      if (!store.playlist) return
+      if (store.playlist.length === 1) {
+        loop()
+      } else {
+        let index = store.currentIndex - 1
+        if (index === -1) {
+          index = store.playlist.length - 1
+        }
+        store.currentIndex = index
+        if (!store.playing) {
+          store.playing = true
+        }
+      }
+    }
+
+    const next = () => {
+      if (!store.playlist) return
+      if (store.playlist.length === 1) {
+        loop()
+      } else {
+        let index = store.currentIndex + 1
+        if (index === store.playlist.length) {
+          index = 0
+        }
+        store.currentIndex = index
+        if (!store.playing) {
+          store.playing = true
+        }
+      }
+    }
+
+    const loop = () => {
+      const audioEl = audioRef.value
+      audioEl!.currentTime = 0
+      audioEl!.play()
+    }
+
     return {
       store,
       audioRef,
       playIcon,
       goBack,
       togglePlay,
-      pause
+      pause,
+      prev,
+      next
     }
   }
 })
