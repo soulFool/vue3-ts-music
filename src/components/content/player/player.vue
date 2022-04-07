@@ -14,7 +14,7 @@
       <div class="bottom">
         <div class="operators">
           <div class="icon i-left">
-            <i class="icon-sequence"></i>
+            <i :class="modeIcon" @click="changeMode"></i>
           </div>
           <div class="icon i-left" :class="disableCls">
             <i class="icon-prev" @click="prev"></i>
@@ -39,16 +39,22 @@
 import { defineComponent, ref, computed, watch } from 'vue'
 
 import { useStore } from '@/store'
+import useMode from './use-mode'
 
 import type { ISingerDetail } from '@/views/type'
 
 export default defineComponent({
   name: 'player',
   setup() {
+    // data
     const store = useStore()
     const audioRef = ref<HTMLAudioElement>()
     const songReady = ref(false)
 
+    // hooks
+    const { modeIcon, changeMode } = useMode()
+
+    // computed
     const playIcon = computed(() => {
       return store.playing ? 'icon-pause' : 'icon-play'
     })
@@ -57,6 +63,7 @@ export default defineComponent({
       return songReady.value ? '' : 'disable'
     })
 
+    // watch
     watch(
       () => store.currentSong,
       (newSong: ISingerDetail) => {
@@ -81,6 +88,7 @@ export default defineComponent({
       }
     )
 
+    // methods
     const goBack = () => {
       store.fullScreen = false
     }
@@ -97,36 +105,42 @@ export default defineComponent({
     }
 
     const prev = () => {
-      if (!songReady.value || !store.playlist) {
+      const playlist = store.playlist
+      const currentIndex = store.currentIndex
+      const playing = store.playing
+      if (!songReady.value || !playlist) {
         return
       }
-      if (store.playlist.length === 1) {
+      if (playlist.length === 1) {
         loop()
       } else {
-        let index = store.currentIndex - 1
+        let index = currentIndex - 1
         if (index === -1) {
-          index = store.playlist.length - 1
+          index = playlist.length - 1
         }
         store.currentIndex = index
-        if (!store.playing) {
+        if (!playing) {
           store.playing = true
         }
       }
     }
 
     const next = () => {
-      if (!songReady.value || !store.playlist) {
+      const playlist = store.playlist
+      const currentIndex = store.currentIndex
+      const playing = store.playing
+      if (!songReady.value || !playlist) {
         return
       }
-      if (store.playlist.length === 1) {
+      if (playlist.length === 1) {
         loop()
       } else {
-        let index = store.currentIndex + 1
-        if (index === store.playlist.length) {
+        let index = currentIndex + 1
+        if (index === playlist.length) {
           index = 0
         }
         store.currentIndex = index
-        if (!store.playing) {
+        if (!playing) {
           store.playing = true
         }
       }
@@ -160,7 +174,10 @@ export default defineComponent({
       prev,
       next,
       ready,
-      error
+      error,
+      // mode
+      modeIcon,
+      changeMode
     }
   }
 })

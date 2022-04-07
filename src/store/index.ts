@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 
 import { PLAY_MODE } from '@/assets/ts/constant'
 import { shuffle } from '@/assets/ts/util'
+import { ISingerDetail } from '@/views/type'
 
 export const useStore = defineStore('main', {
   state: () => ({
@@ -42,6 +43,20 @@ export const useStore = defineStore('main', {
       this.fullScreen = true
       this.playlist = shuffle(list)
       this.currentIndex = 0
+    },
+    changeMode(mode: number) {
+      const currentId = (this.currentSong as ISingerDetail).id
+      if (mode === PLAY_MODE.RANDOM) {
+        this.playlist = shuffle(this.sequenceList)
+      } else {
+        this.playlist = this.sequenceList
+      }
+      const index = this.playlist.findIndex((song: ISingerDetail) => {
+        return song.id === currentId
+      })
+
+      this.currentIndex = index
+      this.playMode = mode
     }
   }
 })
