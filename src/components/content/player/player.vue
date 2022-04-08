@@ -12,6 +12,13 @@
         <h2 class="subtitle">{{ store.currentSong.singer }}</h2>
       </div>
       <div class="bottom">
+        <div class="progress-wrapper">
+          <span class="time time-l">{{ formatTime(currentTime) }}</span>
+          <div class="progress-bar-wrapper">
+            <progress-bar :progress="progress" @progress-changing="onProgressChanging" @progress-changed="onProgressChanged"></progress-bar>
+          </div>
+          <span class="time time-r">{{ formatTime(store.currentSong.duration) }}</span>
+        </div>
         <div class="operators">
           <div class="icon i-left">
             <i :class="modeIcon" @click="changeMode"></i>
@@ -31,26 +38,36 @@
         </div>
       </div>
     </div>
-    <audio ref="audioRef" @pause="pause" @canplay="ready" @error="error"></audio>
+    <audio ref="audioRef" @pause="pause" @canplay="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, computed, watch } from 'vue'
 
+import { PLAY_MODE } from '@/assets/ts/constant'
 import { useStore } from '@/store'
+import { formatTime } from '@/assets/ts/util'
 import useMode from './use-mode'
 import useFavorite from './use-favorite'
+
+import ProgressBar from './progress-bar.vue'
 
 import type { ISingerDetail } from '@/views/type'
 
 export default defineComponent({
   name: 'player',
+  components: {
+    ProgressBar
+  },
   setup() {
     // data
     const store = useStore()
     const audioRef = ref<HTMLAudioElement>()
     const songReady = ref(false)
+    const currentTime = ref(0)
+
+    let progressChanging = false
 
     // hooks
     const { modeIcon, changeMode } = useMode()
@@ -59,6 +76,10 @@ export default defineComponent({
     // computed
     const playIcon = computed(() => {
       return store.playing ? 'icon-pause' : 'icon-play'
+    })
+
+    const progress = computed(() => {
+      return currentTime.value / (store.currentSong as ISingerDetail).duration
     })
 
     const disableCls = computed(() => {
@@ -72,6 +93,7 @@ export default defineComponent({
         if (!newSong.id || !newSong.url) {
           return
         }
+        currentTime.value = 0
         songReady.value = false
         const audioEl = audioRef.value
         audioEl!.src = newSong.url
@@ -152,6 +174,7 @@ export default defineComponent({
       const audioEl = audioRef.value
       audioEl!.currentTime = 0
       audioEl!.play()
+      store.playing = true
     }
 
     const ready = () => {
@@ -165,10 +188,40 @@ export default defineComponent({
       songReady.value = true
     }
 
+    const updateTime = (e: Event) => {
+      if (!progressChanging) {
+        currentTime.value = (e.target as HTMLAudioElement).currentTime
+      }
+    }
+
+    const onProgressChanging = (progress: number) => {
+      progressChanging = true
+      currentTime.value = (store.currentSong as ISingerDetail).duration * progress
+    }
+
+    const onProgressChanged = (progress: number) => {
+      progressChanging = false
+      audioRef.value!.currentTime = currentTime.value = (store.currentSong as ISingerDetail).duration * progress
+      if (!store.playing) {
+        store.playing = true
+      }
+    }
+
+    const end = () => {
+      currentTime.value = 0
+      if (store.playMode === PLAY_MODE.LOOP) {
+        loop()
+      } else {
+        next()
+      }
+    }
+
     return {
       store,
       audioRef,
+      currentTime,
       playIcon,
+      progress,
       disableCls,
       goBack,
       togglePlay,
@@ -177,6 +230,11 @@ export default defineComponent({
       next,
       ready,
       error,
+      updateTime,
+      formatTime,
+      onProgressChanging,
+      onProgressChanged,
+      end,
       // mode
       modeIcon,
       changeMode,
@@ -248,6 +306,29 @@ export default defineComponent({
       position: absolute;
       bottom: 50px;
       width: 100%;
+      .progress-wrapper {
+        display: flex;
+        align-items: center;
+        width: 80%;
+        margin: 0 auto;
+        padding: 10px 0;
+        .time {
+          color: $color-text;
+          font-size: $font-size-small;
+          flex: 0 0 40px;
+          line-height: 30px;
+          width: 40px;
+          &.time-l {
+            text-align: left;
+          }
+          &.time-r {
+            text-align: right;
+          }
+        }
+        .progress-bar-wrapper {
+          flex: 1;
+        }
+      }
       .operators {
         display: flex;
         align-items: center;
