@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia'
 
-import { PLAY_MODE } from '@/assets/ts/constant'
+import { PLAY_MODE, FAVORITE_KEY } from '@/assets/ts/constant'
 import { shuffle } from '@/assets/ts/util'
-import { ISingerDetail } from '@/views/type'
+import { load } from '@/assets/ts/array-store'
+
+import type { ISingerDetail } from '@/views/type'
 
 export const useStore = defineStore('main', {
   state: () => ({
@@ -17,7 +19,9 @@ export const useStore = defineStore('main', {
     // 当前播放索引
     currentIndex: 0,
     // 播放器状态
-    fullScreen: false
+    fullScreen: false,
+    // 收藏歌曲列表
+    favoriteList: load(FAVORITE_KEY)
   }),
   getters: {
     currentSong: (state) => {
