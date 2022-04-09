@@ -32,4 +32,5 @@ export interface ISingerDetail {
   pic: string
   singer: string
   url: string
+  lyric?: string
 }

@@ -1,6 +1,6 @@
 import { get } from './base'
 
-import type { ISongResult } from './type'
+import type { ISongResult, IlyricMap } from './type'
 import type { ISingerDetail } from '@/views/type'
 
 export function processSongs(songs: ISingerDetail[]) {
@@ -21,5 +21,25 @@ export function processSongs(songs: ISingerDetail[]) {
       .filter((song) => {
         return song.url.includes('vkey')
       })
+  })
+}
+
+const lyricMap: IlyricMap = {}
+export function getLyric(song: ISingerDetail) {
+  if (song.lyric) {
+    return Promise.resolve(song.lyric)
+  }
+  const mid = song.mid
+  const lyric = lyricMap[mid]
+  if (lyric) {
+    return Promise.resolve(lyric)
+  }
+
+  return get('/api/getLyric', {
+    mid
+  }).then((result) => {
+    const lyric = result ? result.lyric : '[00:00:00]改歌曲暂时无法获取歌词'
+    lyricMap[mid] = lyric
+    return lyric
   })
 }

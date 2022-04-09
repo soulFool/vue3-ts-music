@@ -18,7 +18,22 @@
               <img class="image" ref="cdImageRef" :class="cdCls" :src="store.currentSong.pic" alt="图片" />
             </div>
           </div>
+          <div class="playing-lyric-wrapper">
+            <div class="playing-lyric">{{ playingLyric }}</div>
+          </div>
         </div>
+        <scroll class="middle-r" ref="lyricScrollRef">
+          <div class="lyric-wrapper">
+            <div v-if="currentLyric" ref="lyricListRef">
+              <p class="text" :class="{ current: currentLineNum === index }" v-for="(line, index) in currentLyric.lines" :key="line.num">
+                {{ line.txt }}
+              </p>
+            </div>
+            <div class="pure-music" v-show="pureMusicLyric">
+              <p>{{ pureMusicLyric }}</p>
+            </div>
+          </div>
+        </scroll>
       </div>
       <div class="bottom">
         <div class="progress-wrapper">
@@ -57,18 +72,21 @@ import { defineComponent, ref, computed, watch } from 'vue'
 import { PLAY_MODE } from '@/assets/ts/constant'
 import { useStore } from '@/store'
 import { formatTime } from '@/assets/ts/util'
-import useMode from './use-mode'
-import useFavorite from './use-favorite'
+import useMode from '@/components/content/player/use-mode'
+import useFavorite from '@/components/content/player/use-favorite'
 import useCd from '@/components/content/player/use-cd'
+import useLyric from '@/components/content/player/use-lyric'
 
 import ProgressBar from './progress-bar.vue'
+import Scroll from '@/components/common/scroll/scroll.vue'
 
 import type { ISingerDetail } from '@/views/type'
 
 export default defineComponent({
   name: 'player',
   components: {
-    ProgressBar
+    ProgressBar,
+    Scroll
   },
   setup() {
     // data
@@ -83,6 +101,10 @@ export default defineComponent({
     const { modeIcon, changeMode } = useMode()
     const { getFavoriteIcon, toggleFavorite } = useFavorite()
     const { cdRef, cdImageRef, cdCls } = useCd()
+    const { currentLyric, currentLineNum, pureMusicLyric, playingLyric, lyricScrollRef, lyricListRef, playLyric, stopLyric } = useLyric(
+      songReady,
+      currentTime
+    )
 
     // computed
     const playIcon = computed(() => {
@@ -119,7 +141,13 @@ export default defineComponent({
           return
         }
         const audioEl = audioRef.value
-        newPlaying ? audioEl!.play() : audioEl!.pause()
+        if (newPlaying) {
+          audioEl!.play()
+          playLyric()
+        } else {
+          audioEl!.pause()
+          stopLyric()
+        }
       }
     )
 
@@ -193,6 +221,7 @@ export default defineComponent({
         return
       }
       songReady.value = true
+      playLyric()
     }
 
     const error = () => {
@@ -208,6 +237,8 @@ export default defineComponent({
     const onProgressChanging = (progress: number) => {
       progressChanging = true
       currentTime.value = (store.currentSong as ISingerDetail).duration * progress
+      playLyric()
+      stopLyric()
     }
 
     const onProgressChanged = (progress: number) => {
@@ -216,6 +247,7 @@ export default defineComponent({
       if (!store.playing) {
         store.playing = true
       }
+      playLyric()
     }
 
     const end = () => {
@@ -255,7 +287,14 @@ export default defineComponent({
       // cd
       cdRef,
       cdImageRef,
-      cdCls
+      cdCls,
+      // lyric
+      currentLyric,
+      currentLineNum,
+      pureMusicLyric,
+      playingLyric,
+      lyricScrollRef,
+      lyricListRef
     }
   }
 })
@@ -355,6 +394,33 @@ export default defineComponent({
             .playing {
               animation: rotate 20s linear infinite;
             }
+          }
+        }
+      }
+      .middle-r {
+        display: inline-block;
+        vertical-align: top;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        .lyric-wrapper {
+          width: 80%;
+          margin: 0 auto;
+          overflow: hidden;
+          text-align: center;
+          .text {
+            line-height: 32px;
+            color: $color-text-l;
+            font-size: $font-size-medium;
+            &.current {
+              color: $color-text;
+            }
+          }
+          .pure-music {
+            padding-top: 50%;
+            line-height: 32px;
+            color: $color-text-l;
+            font-size: $font-size-medium;
           }
         }
       }

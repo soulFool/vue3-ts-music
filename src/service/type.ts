@@ -21,3 +21,7 @@ export interface ISingerDetailResult {
 export interface ISongResult {
   map: any
 }
+
+export interface IlyricMap {
+  [key: string]: string
+}
