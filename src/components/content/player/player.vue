@@ -11,8 +11,8 @@
         <h1 class="title">{{ store.currentSong.name }}</h1>
         <h2 class="subtitle">{{ store.currentSong.singer }}</h2>
       </div>
-      <div class="middle">
-        <div class="middle-l">
+      <div class="middle" @touchstart.prevent="onMiddleTouchStart" @touchmove.prevent="onMiddleTouchMove" @touchend.prevent="onMiddleTouchEnd">
+        <div class="middle-l" :style="middleLStyle">
           <div class="cd-wrapper">
             <div class="cd" ref="cdRef">
               <img class="image" ref="cdImageRef" :class="cdCls" :src="store.currentSong.pic" alt="图片" />
@@ -22,7 +22,7 @@
             <div class="playing-lyric">{{ playingLyric }}</div>
           </div>
         </div>
-        <scroll class="middle-r" ref="lyricScrollRef">
+        <scroll class="middle-r" ref="lyricScrollRef" :style="middleRStyle">
           <div class="lyric-wrapper">
             <div v-if="currentLyric" ref="lyricListRef">
               <p class="text" :class="{ current: currentLineNum === index }" v-for="(line, index) in currentLyric.lines" :key="line.num">
@@ -36,6 +36,10 @@
         </scroll>
       </div>
       <div class="bottom">
+        <div class="dot-wrapper">
+          <span class="dot" :class="{ active: currentShow === 'cd' }"></span>
+          <span class="dot" :class="{ active: currentShow === 'lyric' }"></span>
+        </div>
         <div class="progress-wrapper">
           <span class="time time-l">{{ formatTime(currentTime) }}</span>
           <div class="progress-bar-wrapper">
@@ -76,6 +80,7 @@ import useMode from '@/components/content/player/use-mode'
 import useFavorite from '@/components/content/player/use-favorite'
 import useCd from '@/components/content/player/use-cd'
 import useLyric from '@/components/content/player/use-lyric'
+import useMiddleInteractive from '@/components/content/player/use-middle-interactive'
 
 import ProgressBar from './progress-bar.vue'
 import Scroll from '@/components/common/scroll/scroll.vue'
@@ -105,6 +110,7 @@ export default defineComponent({
       songReady,
       currentTime
     )
+    const { currentShow, middleLStyle, middleRStyle, onMiddleTouchStart, onMiddleTouchMove, onMiddleTouchEnd } = useMiddleInteractive()
 
     // computed
     const playIcon = computed(() => {
@@ -294,7 +300,14 @@ export default defineComponent({
       pureMusicLyric,
       playingLyric,
       lyricScrollRef,
-      lyricListRef
+      lyricListRef,
+      // middle-interactive
+      currentShow,
+      middleLStyle,
+      middleRStyle,
+      onMiddleTouchStart,
+      onMiddleTouchMove,
+      onMiddleTouchEnd
     }
   }
 })
@@ -389,11 +402,23 @@ export default defineComponent({
               height: 100%;
               box-sizing: border-box;
               border-radius: 50%;
-              border: 10px solid rgba(255, 255, 255, 0);
+              border: 10px solid rgba(255, 255, 255, 0.1);
             }
             .playing {
               animation: rotate 20s linear infinite;
             }
+          }
+        }
+        .playing-lyric-wrapper {
+          width: 80%;
+          margin: 30px auto 0 auto;
+          overflow: hidden;
+          text-align: center;
+          .playing-lyric {
+            height: 20px;
+            line-height: 20px;
+            font-size: $font-size-medium;
+            color: $color-text-l;
           }
         }
       }
@@ -429,6 +454,24 @@ export default defineComponent({
       position: absolute;
       bottom: 50px;
       width: 100%;
+      .dot-wrapper {
+        text-align: center;
+        font-size: 0;
+        .dot {
+          display: inline-block;
+          vertical-align: middle;
+          margin: 0 4px;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: $color-text-l;
+          &.active {
+            width: 20px;
+            border-radius: 5px;
+            background: $color-text-ll;
+          }
+        }
+      }
       .progress-wrapper {
         display: flex;
         align-items: center;
