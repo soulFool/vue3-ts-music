@@ -36,8 +36,7 @@ export default defineComponent({
     watch(
       () => props.progress,
       (newProgress) => {
-        const barWidth = progressBarRef.value!.clientWidth - progressBtnWidth
-        offset.value = barWidth * newProgress
+        setOffset(newProgress)
       }
     )
 
@@ -69,6 +68,11 @@ export default defineComponent({
       emit('progress-changed', progress)
     }
 
+    const setOffset = (progress: number) => {
+      const barWidth = progressBarRef.value!.clientWidth - progressBtnWidth
+      offset.value = barWidth * progress
+    }
+
     return {
       progressBarRef,
       progressRef,
@@ -76,7 +80,8 @@ export default defineComponent({
       onTouchStart,
       onTouchMove,
       onTouchEnd,
-      onClick
+      onClick,
+      setOffset
     }
   }
 })

@@ -1,5 +1,5 @@
 <template>
-  <div class="player">
+  <div class="player" v-show="store.playlist.length">
     <div class="normal-player" v-show="store.fullScreen">
       <div class="background">
         <img :src="store.currentSong.pic" alt="图片" />
@@ -43,7 +43,12 @@
         <div class="progress-wrapper">
           <span class="time time-l">{{ formatTime(currentTime) }}</span>
           <div class="progress-bar-wrapper">
-            <progress-bar :progress="progress" @progress-changing="onProgressChanging" @progress-changed="onProgressChanged"></progress-bar>
+            <progress-bar
+              ref="barRef"
+              :progress="progress"
+              @progress-changing="onProgressChanging"
+              @progress-changed="onProgressChanged"
+            ></progress-bar>
           </div>
           <span class="time time-r">{{ formatTime(store.currentSong.duration) }}</span>
         </div>
@@ -66,12 +71,13 @@
         </div>
       </div>
     </div>
+    <mini-player :progress="progress" :toggle-play="togglePlay"></mini-player>
     <audio ref="audioRef" @pause="pause" @canplay="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, watch } from 'vue'
+import { defineComponent, ref, computed, watch, nextTick } from 'vue'
 
 import { PLAY_MODE } from '@/assets/ts/constant'
 import { useStore } from '@/store'
@@ -84,6 +90,7 @@ import useMiddleInteractive from '@/components/content/player/use-middle-interac
 
 import ProgressBar from './progress-bar.vue'
 import Scroll from '@/components/common/scroll/scroll.vue'
+import MiniPlayer from './mini-player.vue'
 
 import type { ISingerDetail } from '@/views/type'
 
@@ -91,12 +98,14 @@ export default defineComponent({
   name: 'player',
   components: {
     ProgressBar,
-    Scroll
+    Scroll,
+    MiniPlayer
   },
   setup() {
     // data
     const store = useStore()
     const audioRef = ref<HTMLAudioElement>()
+    const barRef = ref<InstanceType<typeof ProgressBar>>()
     const songReady = ref(false)
     const currentTime = ref(0)
 
@@ -153,6 +162,16 @@ export default defineComponent({
         } else {
           audioEl!.pause()
           stopLyric()
+        }
+      }
+    )
+
+    watch(
+      () => store.fullScreen,
+      async (newFullScreen) => {
+        if (newFullScreen) {
+          await nextTick()
+          barRef.value!.setOffset(progress.value)
         }
       }
     )
@@ -268,6 +287,7 @@ export default defineComponent({
     return {
       store,
       audioRef,
+      barRef,
       currentTime,
       playIcon,
       progress,
