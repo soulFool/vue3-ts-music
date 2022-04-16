@@ -150,6 +150,7 @@ export default defineComponent({
         const audioEl = audioRef.value
         audioEl!.src = newSong.url
         audioEl!.play()
+        store.playing = true
       }
     )
 
@@ -199,7 +200,6 @@ export default defineComponent({
     const prev = () => {
       const playlist = store.playlist
       const currentIndex = store.currentIndex
-      const playing = store.playing
       if (!songReady.value || !playlist) {
         return
       }
@@ -211,16 +211,12 @@ export default defineComponent({
           index = playlist.length - 1
         }
         store.currentIndex = index
-        if (!playing) {
-          store.playing = true
-        }
       }
     }
 
     const next = () => {
       const playlist = store.playlist
       const currentIndex = store.currentIndex
-      const playing = store.playing
       if (!songReady.value || !playlist) {
         return
       }
@@ -232,9 +228,6 @@ export default defineComponent({
           index = 0
         }
         store.currentIndex = index
-        if (!playing) {
-          store.playing = true
-        }
       }
     }
 

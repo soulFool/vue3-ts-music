@@ -61,6 +61,41 @@ export const useStore = defineStore('main', {
 
       this.currentIndex = index
       this.playMode = mode
+    },
+    removeSong(song: ISingerDetail) {
+      const sequenceList = this.sequenceList.slice()
+      const playlist = this.playlist.slice()
+
+      const sequenceIndex = findIndex(sequenceList, song)
+      const playIndex = findIndex(playlist, song)
+      if (sequenceIndex < 0 || playIndex < 0) {
+        return
+      }
+
+      sequenceList.splice(sequenceIndex, 1)
+      playlist.splice(playIndex, 1)
+
+      if (playIndex < this.currentIndex || this.currentIndex === playlist.length) {
+        this.currentIndex--
+      }
+
+      this.sequenceList = sequenceList
+      this.playlist = playlist
+      if (!playlist.length) {
+        this.playing = false
+      }
+    },
+    clearSongList() {
+      this.sequenceList = []
+      this.playlist = []
+      this.currentIndex = 0
+      this.playing = false
     }
   }
 })
+
+function findIndex(list: ISingerDetail[], song: ISingerDetail) {
+  return list.findIndex((item) => {
+    return item.id === song.id
+  })
+}

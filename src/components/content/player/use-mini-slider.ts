@@ -40,7 +40,6 @@ export default function useMiniSlider() {
 
           sliderVal.on('slidePageChanged', (page: { x: number; y: number; pageX: number; pageY: number }) => {
             store.currentIndex = page.pageX
-            store.playing = true
           })
         } else {
           sliderVal.refresh()
@@ -54,6 +53,16 @@ export default function useMiniSlider() {
       (newIndex) => {
         if (sliderVal && sliderShow.value) {
           sliderVal.goToPage(newIndex, 0, 0)
+        }
+      }
+    )
+
+    watch(
+      () => store.playlist,
+      async (newList) => {
+        if (sliderVal && sliderShow.value && newList.length) {
+          await nextTick()
+          sliderVal.refresh()
         }
       }
     )

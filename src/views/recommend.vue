@@ -34,7 +34,7 @@ import { defineComponent, onMounted, ref, computed } from 'vue'
 import { getRecommend } from '@/service/recommend'
 
 import Slider from '@/components/common/slider/slider.vue'
-import Scroll from '@/components/common/scroll/scroll.vue'
+import Scroll from '@/components/content/wrap-scroll'
 
 import type { IRecommendAlbumsItem, IRecommendSlidersItem } from './type'
 import type { IRecommendResult } from '@/service/type'

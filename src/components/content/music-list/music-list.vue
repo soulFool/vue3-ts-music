@@ -28,7 +28,7 @@ import { useRouter } from 'vue-router'
 import { useStore } from '@/store'
 
 import SongList from '@/components/common/song-list/song-list.vue'
-import Scroll from '@/components/common/scroll/scroll.vue'
+import Scroll from '@/components/content/wrap-scroll'
 
 import type { ISingerDetail } from '@/views/type'
 
@@ -130,6 +130,7 @@ export default defineComponent({
     })
 
     return {
+      store,
       bgImageRef,
       imageHeight,
       scrollY,
@@ -227,10 +228,10 @@ export default defineComponent({
   }
   .list {
     position: absolute;
-    bottom: 0;
     width: 100%;
     z-index: 0;
     top: v-bind("imageHeight + 'px'");
+    bottom: v-bind("store.playlist.length ? '60px' : '0'");
     .song-list-wrapper {
       padding: 20px 30px;
       background: $color-background;

@@ -30,7 +30,7 @@ import { defineComponent, PropType } from 'vue'
 import useFixed from './use-fixed'
 import useShortcut from './use-shortcut'
 
-import Scroll from '@/components/common/scroll/scroll.vue'
+import Scroll from '@/components/content/wrap-scroll'
 
 import type { Ref } from 'vue'
 import type { ISingerGroup, ISingerGroupItem } from '@/views/type'

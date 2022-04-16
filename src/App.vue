@@ -1,12 +1,14 @@
 <template>
   <m-header></m-header>
   <tab></tab>
-  <router-view></router-view>
+  <router-view :style="viewStyle"></router-view>
   <player></player>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, computed } from 'vue'
+
+import { useStore } from '@/store'
 
 import Header from '@/components/content/header/header.vue'
 import Tab from '@/components/content/tab/tab.vue'
@@ -18,6 +20,20 @@ export default defineComponent({
     MHeader: Header,
     Tab,
     Player
+  },
+  setup() {
+    const store = useStore()
+
+    const viewStyle = computed(() => {
+      const bottom = store.playlist.length ? '60px' : '0'
+      return {
+        bottom
+      }
+    })
+
+    return {
+      viewStyle
+    }
   }
 })
 </script>

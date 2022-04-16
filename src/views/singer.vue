@@ -18,7 +18,7 @@ import { SINGER_KEY } from '@/assets/ts/constant'
 
 import { getSingerList } from '@/service/singer'
 
-import IndexList from '@/components/common/index-list/index-list.vue'
+import IndexList from '@/components/content/index-list/index-list.vue'
 
 import type { ISingerListResult } from '@/service/type'
 import type { ISingerGroup, ISingerGroupItem } from './type'
