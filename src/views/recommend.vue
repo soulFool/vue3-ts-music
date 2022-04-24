@@ -12,7 +12,7 @@
         <div class="recommend-list">
           <h1 class="list-title" v-show="!loading">热门歌单推荐</h1>
           <ul>
-            <li class="item" v-for="item in albums" :key="item.id">
+            <li class="item" v-for="item in albums" :key="item.id" @click="selectItem(item)">
               <div class="icon">
                 <img width="60" height="60" v-lazy="item.pic" alt="图片" />
               </div>
@@ -25,13 +25,22 @@
         </div>
       </div>
     </scroll>
+    <router-view v-slot="{ Component }">
+      <transition appear name="slide">
+        <component :is="Component" :album="selectedAlbum"></component>
+      </transition>
+    </router-view>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import storage from 'good-storage'
 
 import { getRecommend } from '@/service/recommend'
+
+import { ALBUM_KEY } from '@/assets/ts/constant'
 
 import Slider from '@/components/common/slider/slider.vue'
 import Scroll from '@/components/content/wrap-scroll'
@@ -46,12 +55,26 @@ export default defineComponent({
     Scroll
   },
   setup() {
+    const router = useRouter()
     // 其实这里用 options API 更好，只不过这个项目是为了练习 Vue3
     // 而且好像在哪里听说过，全部使用 composition API，打包的时候就不会打包 options API 的部分，代码体积会减小，故这个项目将全部使用 composition API
     const sliders = ref<IRecommendSlidersItem[]>([])
     const albums = ref<IRecommendAlbumsItem[]>([])
+    const selectedAlbum = ref<IRecommendAlbumsItem>()
 
     const loading = computed(() => !sliders.value.length && !albums.value.length)
+
+    const selectItem = (album: IRecommendAlbumsItem) => {
+      selectedAlbum.value = album
+      cacheAlbum(album)
+      router.push({
+        path: `/recommend/${album.id}`
+      })
+    }
+
+    const cacheAlbum = (album: IRecommendAlbumsItem) => {
+      storage.session.set(ALBUM_KEY, album)
+    }
 
     onMounted(async () => {
       // 这个赋值必须写在 onMounted 里面，如果写在 setup 里面，会报 parentNode 为 null 的错，parentNode 都是 dom 元素
@@ -64,7 +87,9 @@ export default defineComponent({
     return {
       sliders,
       albums,
-      loading
+      selectedAlbum,
+      loading,
+      selectItem
     }
   }
 })

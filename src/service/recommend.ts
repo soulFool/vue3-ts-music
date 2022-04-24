@@ -1,7 +1,14 @@
 import { get } from '@/service/base'
 
-import { IRecommendResult } from './type'
+import type { IRecommendResult } from './type'
+import type { IRecommendAlbumsItem } from '@/views/type'
 
 export function getRecommend() {
   return get<IRecommendResult>('/api/getRecommend')
+}
+
+export function getAlbum(album: IRecommendAlbumsItem) {
+  return get('/api/getAlbum', {
+    id: album.id
+  })
 }

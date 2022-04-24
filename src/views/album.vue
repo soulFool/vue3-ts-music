@@ -1,5 +1,5 @@
 <template>
-  <div class="singer-detail">
+  <div class="album">
     <music-list :songs="songs" :title="title" :pic="pic" :loading="loading"></music-list>
   </div>
 </template>
@@ -7,28 +7,28 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 
-import { getSingerDetail } from '@/service/singer'
+import { getAlbum } from '@/service/recommend'
 
 import createDetailComponent from '@/assets/ts/create-detail-component'
-import { SINGER_KEY } from '@/assets/ts/constant'
+import { ALBUM_KEY } from '@/assets/ts/constant'
 
 import MusicList from '@/components/content/music-list/music-list.vue'
 
-import type { ISingerGroupItem } from './type'
+import type { IRecommendAlbumsItem } from '@/views/type'
 
 export default defineComponent({
-  name: 'singer-detail',
+  name: 'album',
   components: {
     MusicList
   },
   props: {
-    singer: {
-      type: Object as PropType<ISingerGroupItem>,
+    album: {
+      type: Object as PropType<IRecommendAlbumsItem>,
       required: true
     }
   },
   setup(props) {
-    const { songs, pic, title, loading } = createDetailComponent(props.singer, SINGER_KEY, getSingerDetail)
+    const { songs, pic, title, loading } = createDetailComponent(props.album, ALBUM_KEY, getAlbum)
 
     return {
       songs,
@@ -41,7 +41,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.singer-detail {
+.album {
   position: fixed;
   z-index: 10;
   top: 0;
