@@ -4,11 +4,11 @@ import storage from 'good-storage'
 
 import { processSongs } from '@/service/song'
 
-import type { ISingerDetail, ISingerGroupItem, IRecommendAlbumsItem } from '@/views/type'
+import type { ISingerDetail, ISingerGroupItem, IRecommendAlbumsItem, ITopListItem } from '@/views/type'
 import type { ISingerDetailResult } from '@/service/type'
 
 export default function createDetailComponent(
-  data: ISingerGroupItem | IRecommendAlbumsItem,
+  data: ISingerGroupItem | IRecommendAlbumsItem | ITopListItem,
   key: string,
   fetch: (val: any) => Promise<void | ISingerDetailResult | undefined>
 ) {

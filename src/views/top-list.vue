@@ -2,7 +2,7 @@
   <div class="top-list" v-loading="loading">
     <scroll class="top-list-content">
       <ul>
-        <li class="item" v-for="item in topList" :key="item.id">
+        <li class="item" v-for="item in topList" :key="item.id" @click="selectItem(item)">
           <div class="icon">
             <img width="100" height="100" v-lazy="item.pic" alt="" />
           </div>
@@ -15,13 +15,23 @@
         </li>
       </ul>
     </scroll>
+    <router-view v-slot="{ Component }">
+      <transition appear name="slide">
+        <component :is="Component" :top="selectedTop"></component>
+      </transition>
+    </router-view>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import storage from 'good-storage'
 
 import { getTopList } from '@/service/top-list'
+
+import { TOP_KEY } from '@/assets/ts/constant'
+
 import Scroll from '@/components/content/wrap-scroll'
 
 import type { ITopListItem } from './type'
@@ -33,8 +43,22 @@ export default defineComponent({
     Scroll
   },
   setup() {
+    const router = useRouter()
     const topList = ref<ITopListItem[]>([])
     const loading = ref(true)
+    const selectedTop = ref<ITopListItem>()
+
+    const selectItem = (top: ITopListItem) => {
+      selectedTop.value = top
+      cacheTop(top)
+      router.push({
+        path: `/top-list/${top.id}`
+      })
+    }
+
+    const cacheTop = (top: ITopListItem) => {
+      storage.session.set(TOP_KEY, top)
+    }
 
     onMounted(async () => {
       const result = await getTopList()
@@ -44,7 +68,9 @@ export default defineComponent({
 
     return {
       topList,
-      loading
+      loading,
+      selectedTop,
+      selectItem
     }
   }
 })

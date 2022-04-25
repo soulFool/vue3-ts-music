@@ -7,6 +7,7 @@ import TopList from '@/views/top-list.vue'
 import Search from '@/views/search.vue'
 import SingerDetail from '@/views/singer-detail.vue'
 import Album from '@/views/album.vue'
+import TopDetail from '@/views/top-detail.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -35,7 +36,13 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/top-list',
-    component: TopList
+    component: TopList,
+    children: [
+      {
+        path: ':id',
+        component: TopDetail
+      }
+    ]
   },
   {
     path: '/search',
