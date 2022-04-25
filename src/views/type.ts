@@ -34,3 +34,17 @@ export interface ISingerDetail {
   url: string
   lyric?: string
 }
+
+export interface ITopListItem {
+  id: number
+  name: string
+  period: string
+  pic: string
+  songList: ITopListSongItem[]
+}
+
+export interface ITopListSongItem {
+  id: number
+  singerName: string
+  songName: string
+}

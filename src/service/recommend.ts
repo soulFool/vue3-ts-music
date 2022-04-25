@@ -1,6 +1,6 @@
 import { get } from '@/service/base'
 
-import type { IRecommendResult } from './type'
+import type { IRecommendResult, ISingerDetailResult } from './type'
 import type { IRecommendAlbumsItem } from '@/views/type'
 
 export function getRecommend() {
@@ -8,7 +8,7 @@ export function getRecommend() {
 }
 
 export function getAlbum(album: IRecommendAlbumsItem) {
-  return get('/api/getAlbum', {
+  return get<ISingerDetailResult>('/api/getAlbum', {
     id: album.id
   })
 }

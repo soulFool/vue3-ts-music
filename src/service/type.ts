@@ -1,4 +1,4 @@
-import type { IRecommendAlbumsItem, IRecommendSlidersItem, ISingerGroup, ISingerDetail } from '@/views/type'
+import type { IRecommendAlbumsItem, IRecommendSlidersItem, ISingerGroup, ISingerDetail, ITopListItem } from '@/views/type'
 
 export interface IResponseResult<T = any> {
   code: number
@@ -24,4 +24,8 @@ export interface ISongResult {
 
 export interface IlyricMap {
   [key: string]: string
+}
+
+export interface ITopListResult {
+  topList: ITopListItem[]
 }
