@@ -20,6 +20,7 @@
     "good-storage": "^1.1.1",
     "lyric-parser": "^1.0.1",
     "pinia": "^2.0.12",
+    "throttle-debounce": "^4.0.1",
     "vue": "^3.0.0",
     "vue-router": "^4.0.13",
     "vue3-lazy": "^1.0.0-alpha.1"
@@ -29,6 +30,7 @@
     "@commitlint/config-conventional": "^16.2.1",
     "@types/good-storage": "^1.1.0",
     "@types/lyric-parser": "^1.0.2",
+    "@types/throttle-debounce": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "^4.18.0",
     "@typescript-eslint/parser": "^4.18.0",
     "@vue/cli-plugin-babel": "~4.5.12",
