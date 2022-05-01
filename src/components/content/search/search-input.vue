@@ -1,7 +1,7 @@
 <template>
   <div class="search-input">
     <i class="icon-search"></i>
-    <input class="input-inner" v-model="query" />
+    <input class="input-inner" placeholder="placeholder" v-model="query" />
     <i class="icon-dismiss" v-show="query" @click="clear"></i>
   </div>
 </template>
@@ -16,6 +16,10 @@ export default defineComponent({
     modelValue: {
       type: String,
       required: true
+    },
+    placeholder: {
+      type: String,
+      default: '搜索歌曲、歌手'
     }
   },
   emits: ['update:modelValue'],

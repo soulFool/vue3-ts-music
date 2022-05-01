@@ -29,3 +29,12 @@ export interface IlyricMap {
 export interface ITopListResult {
   topList: ITopListItem[]
 }
+
+export interface IHotKeysResult {
+  hotKeys: IHotKeys[]
+}
+
+export interface IHotKeys {
+  key: string
+  id: number
+}
