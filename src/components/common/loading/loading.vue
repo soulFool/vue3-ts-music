@@ -59,7 +59,7 @@ export default defineComponent({
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate3d(-50%, -100%, 0);
+  transform: translate3d(-50%, -50%, 0);
   .loading-content {
     text-align: center;
     .desc {

@@ -19,7 +19,7 @@ export function processSongs(songs: ISingerDetail[]) {
         return song
       })
       .filter((song) => {
-        return song.url.includes('vkey')
+        return song.url && song.url.includes('vkey')
       })
   })
 }

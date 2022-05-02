@@ -90,6 +90,30 @@ export const useStore = defineStore('main', {
       this.playlist = []
       this.currentIndex = 0
       this.playing = false
+    },
+    addSong(song: ISingerDetail) {
+      const playlist = this.playlist.slice()
+      const sequenceList = this.sequenceList.slice()
+      let currentIndex = this.currentIndex
+      const playIndex = findIndex(playlist, song)
+
+      if (playIndex > -1) {
+        currentIndex = playIndex
+      } else {
+        ;(playlist as ISingerDetail[]).push(song)
+        currentIndex = playlist.length - 1
+      }
+
+      const sequenceIndex = findIndex(sequenceList, song)
+      if (sequenceIndex === -1) {
+        ;(sequenceList as ISingerDetail[]).push(song)
+      }
+
+      this.sequenceList = sequenceList
+      this.playlist = playlist
+      this.currentIndex = currentIndex
+      this.playing = true
+      this.fullScreen = true
     }
   }
 })

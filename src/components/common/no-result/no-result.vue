@@ -172,7 +172,7 @@ import { defineComponent, onMounted, onUnmounted, ref } from 'vue'
 export default defineComponent({
   name: 'no-result',
   setup() {
-    const title = ref('')
+    const title = ref('抱歉，没有结果')
     const blinking = ref<'open' | 'closed'>('open')
     const talking = ref<'open' | 'closed'>('closed')
 

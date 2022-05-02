@@ -3,7 +3,7 @@
     <div class="search-input-wrapper">
       <search-input v-model="query"></search-input>
     </div>
-    <div class="search-content">
+    <div class="search-content" v-show="!query">
       <div class="hot-keys">
         <h1 class="title">热门搜索</h1>
         <ul>
@@ -11,26 +11,45 @@
         </ul>
       </div>
     </div>
+    <div class="search-result" v-show="query">
+      <suggest :query="query" @select-song="selectSong" @select-singer="selectSinger"></suggest>
+    </div>
+    <router-view v-slot="{ Component }">
+      <transition appear name="slide">
+        <component :is="Component" :singer="selectedSinger"></component>
+      </transition>
+    </router-view>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
+import { useStore } from '@/store'
+import { useRouter } from 'vue-router'
+import storage from 'good-storage'
+
+import { SINGER_KEY } from '@/assets/ts/constant'
 
 import { getHotKeys } from '@/service/search'
 
 import SearchInput from '@/components/content/search/search-input.vue'
+import Suggest from '@/components/content/search/suggest.vue'
 
 import type { IHotKeysResult, IHotKeys } from '@/service/type'
+import type { ISingerGroupItem, ISingerDetail } from '@/views/type'
 
 export default defineComponent({
   name: 'search',
   components: {
-    SearchInput
+    SearchInput,
+    Suggest
   },
   setup() {
+    const store = useStore()
+    const router = useRouter()
     const query = ref('')
     const hotKeys = ref<IHotKeys[]>()
+    const selectedSinger = ref<ISingerGroupItem>()
 
     getHotKeys().then((result) => {
       hotKeys.value = (result as IHotKeysResult).hotKeys
@@ -40,10 +59,28 @@ export default defineComponent({
       query.value = key
     }
 
+    const selectSong = (song: ISingerDetail) => {
+      store.addSong(song)
+    }
+
+    const selectSinger = (singer: ISingerGroupItem) => {
+      selectedSinger.value = singer
+      cacheSinger(singer)
+
+      router.push({ path: `/search/${singer.mid}` })
+    }
+
+    function cacheSinger(singer: ISingerGroupItem) {
+      storage.session.set(SINGER_KEY, singer)
+    }
+
     return {
       query,
       hotKeys,
-      addQuery
+      selectedSinger,
+      addQuery,
+      selectSong,
+      selectSinger
     }
   }
 })
@@ -80,6 +117,10 @@ export default defineComponent({
         color: $color-text-d;
       }
     }
+  }
+  .search-result {
+    flex: 1;
+    overflow: hidden;
   }
 }
 </style>

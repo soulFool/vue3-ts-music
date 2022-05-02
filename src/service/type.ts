@@ -1,4 +1,4 @@
-import type { IRecommendAlbumsItem, IRecommendSlidersItem, ISingerGroup, ISingerDetail, ITopListItem } from '@/views/type'
+import type { IRecommendAlbumsItem, IRecommendSlidersItem, ISingerGroup, ISingerDetail, ITopListItem, ISingerGroupItem } from '@/views/type'
 
 export interface IResponseResult<T = any> {
   code: number
@@ -37,4 +37,10 @@ export interface IHotKeysResult {
 export interface IHotKeys {
   key: string
   id: number
+}
+
+export interface ISearchResult {
+  hasMore: boolean
+  singer: ISingerGroupItem
+  songs: ISingerDetail[]
 }
