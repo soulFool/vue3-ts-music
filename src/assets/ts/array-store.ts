@@ -35,3 +35,8 @@ export function remove(key: string, compare: (item: any) => void) {
 export function load(key: string) {
   return storage.get(key, [])
 }
+
+export function clear(key: string) {
+  storage.remove(key)
+  return []
+}
