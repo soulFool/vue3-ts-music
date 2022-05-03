@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-import { PLAY_MODE, FAVORITE_KEY, SEARCH_KEY } from '@/assets/ts/constant'
+import { PLAY_MODE, FAVORITE_KEY, SEARCH_KEY, PLAY_KEY } from '@/assets/ts/constant'
 import { shuffle } from '@/assets/ts/util'
 import { load } from '@/assets/ts/array-store'
 
@@ -23,7 +23,9 @@ export const useStore = defineStore('main', {
     // 收藏歌曲列表
     favoriteList: load(FAVORITE_KEY),
     // 搜索历史
-    searchHistory: load(SEARCH_KEY)
+    searchHistory: load(SEARCH_KEY),
+    // 播放历史
+    playHistory: load(PLAY_KEY)
   }),
   getters: {
     currentSong: (state) => {

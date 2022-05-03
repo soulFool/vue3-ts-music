@@ -48,3 +48,8 @@ export interface ITopListSongItem {
   singerName: string
   songName: string
 }
+
+export interface ISongListSelectItem {
+  song: ISingerDetail
+  index: number
+}

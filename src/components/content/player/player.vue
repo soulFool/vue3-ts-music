@@ -90,6 +90,7 @@ import useCd from '@/components/content/player/use-cd'
 import useLyric from '@/components/content/player/use-lyric'
 import useMiddleInteractive from '@/components/content/player/use-middle-interactive'
 import useAnimation from '@/components/content/player/use-animation'
+import usePlayHistory from '@/components/content/player/usePlayHistory'
 
 import ProgressBar from './progress-bar.vue'
 import Scroll from '@/components/common/scroll/scroll.vue'
@@ -124,6 +125,7 @@ export default defineComponent({
     )
     const { currentShow, middleLStyle, middleRStyle, onMiddleTouchStart, onMiddleTouchMove, onMiddleTouchEnd } = useMiddleInteractive()
     const { cdWrapperRef, enter, afterEnter, leave, afterLeave } = useAnimation()
+    const { savePlay } = usePlayHistory()
 
     // computed
     const playIcon = computed(() => {
@@ -244,6 +246,7 @@ export default defineComponent({
       }
       songReady.value = true
       playLyric()
+      savePlay(store.currentSong)
     }
 
     const error = () => {

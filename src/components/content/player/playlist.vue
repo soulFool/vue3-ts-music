@@ -26,11 +26,18 @@
               </li>
             </transition-group>
           </scroll>
+          <div class="list-add">
+            <div class="add" @click="showAddSong">
+              <i class="icon-add"></i>
+              <span class="text">添加歌曲到队列</span>
+            </div>
+          </div>
           <div class="list-footer" @click="hide">
             <span>关闭</span>
           </div>
         </div>
         <confirm ref="confirmRef" @confirm="confirmClear" text="是否清空播放列表？" confirm-btn-text="清空"></confirm>
+        <add-song ref="addSongRef"></add-song>
       </div>
     </transition>
   </teleport>
@@ -45,6 +52,7 @@ import useFavorite from '@/components/content/player/use-favorite'
 
 import Scroll from '@/components/common/scroll/scroll.vue'
 import Confirm from '@/components/common/confirm/confirm.vue'
+import AddSong from '@/components/content/add-song/add-song.vue'
 
 import type { ISingerDetail } from '@/views/type'
 
@@ -52,7 +60,8 @@ export default defineComponent({
   name: 'playlist',
   components: {
     Scroll,
-    Confirm
+    Confirm,
+    AddSong
   },
   setup() {
     const store = useStore()
@@ -61,6 +70,7 @@ export default defineComponent({
     const scrollRef = ref<InstanceType<typeof Scroll>>()
     const listRef = ref<DefineComponent>()
     const confirmRef = ref<InstanceType<typeof Confirm>>()
+    const addSongRef = ref<InstanceType<typeof AddSong>>()
 
     const { modeIcon, modeText, changeMode } = useMode()
     const { getFavoriteIcon, toggleFavorite } = useFavorite()
@@ -142,6 +152,10 @@ export default defineComponent({
       hide()
     }
 
+    const showAddSong = () => {
+      addSongRef.value!.show()
+    }
+
     return {
       store,
       visible,
@@ -149,6 +163,7 @@ export default defineComponent({
       scrollRef,
       listRef,
       confirmRef,
+      addSongRef,
       getCurrentIcon,
       show,
       hide,
@@ -156,6 +171,7 @@ export default defineComponent({
       removeSong,
       showConfirm,
       confirmClear,
+      showAddSong,
       // mode
       modeIcon,
       modeText,
@@ -185,7 +201,7 @@ export default defineComponent({
     }
   }
   &.list-fade-enter-from,
-  &.list-fade-enter-to {
+  &.list-fade-leave-to {
     opacity: 0;
     .list-wrapper {
       transform: translate3d(0, 100%, 0);
