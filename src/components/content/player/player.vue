@@ -90,7 +90,7 @@ import useCd from '@/components/content/player/use-cd'
 import useLyric from '@/components/content/player/use-lyric'
 import useMiddleInteractive from '@/components/content/player/use-middle-interactive'
 import useAnimation from '@/components/content/player/use-animation'
-import usePlayHistory from '@/components/content/player/usePlayHistory'
+import usePlayHistory from '@/components/content/player/use-play-history'
 
 import ProgressBar from './progress-bar.vue'
 import Scroll from '@/components/common/scroll/scroll.vue'
