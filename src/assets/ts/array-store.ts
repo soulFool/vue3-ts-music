@@ -43,3 +43,7 @@ export function clear(key: string) {
   storage.remove(key)
   return []
 }
+
+export function saveAll(items: any[], key: string) {
+  storage.set(key, items)
+}
